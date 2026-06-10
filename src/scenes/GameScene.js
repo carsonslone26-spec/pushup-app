@@ -8,6 +8,7 @@ import { ParticleManager } from '../systems/ParticleManager.js';
 import { PickupManager } from '../systems/PickupManager.js';
 import { SaveManager } from '../systems/SaveManager.js';
 import { MusicManager } from '../systems/MusicManager.js';
+import { AsteroidManager } from '../systems/AsteroidManager.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -105,6 +106,7 @@ export class GameScene extends Phaser.Scene {
         this.pickupManager = new PickupManager(this);
         this.waveManager = new WaveManager(this);
         this.musicManager = new MusicManager(this);
+        this.asteroidManager = new AsteroidManager(this);
         
         // Start music on first user interaction
         this.input.once('pointerdown', () => {
@@ -190,6 +192,24 @@ export class GameScene extends Phaser.Scene {
             this.pickupManager.pickups,
             this.player.sprite,
             this.onPickupCollected,
+            null,
+            this
+        );
+        
+        // Asteroids vs player
+        this.physics.add.overlap(
+            this.asteroidManager.getAsteroids(),
+            this.player.sprite,
+            this.onAsteroidHitPlayer,
+            null,
+            this
+        );
+        
+        // Player projectiles vs asteroids
+        this.physics.add.overlap(
+            this.projectileManager.playerProjectiles,
+            this.asteroidManager.getAsteroids(),
+            this.onProjectileHitAsteroid,
             null,
             this
         );
@@ -437,6 +457,41 @@ export class GameScene extends Phaser.Scene {
         this.playSound('explosion2');
     }
 
+    onAsteroidHitPlayer(asteroid, player) {
+        if (!asteroid.active || this.player.isInvulnerable) return;
+        
+        const damage = asteroid.getData('damage') || 15;
+        this.player.takeDamage(damage);
+        this.shakeScreen(3, 100);
+        
+        // Destroy asteroid
+        this.particleManager.createExplosion(asteroid.x, asteroid.y, 0x665544, 30);
+        asteroid.destroy();
+    }
+
+    onProjectileHitAsteroid(projectile, asteroid) {
+        if (!projectile.active || !asteroid.active) return;
+        
+        // Damage asteroid - smaller ones get destroyed
+        const size = asteroid.getData('size') || 30;
+        
+        if (size <= 25) {
+            this.particleManager.createExplosion(asteroid.x, asteroid.y, 0x665544, size);
+            asteroid.destroy();
+            this.gameState.score += 25;
+        } else {
+            // Shrink asteroid
+            asteroid.setData('size', size - 10);
+            asteroid.setScale((size - 10) / size);
+            this.particleManager.createHitEffect(asteroid.x, asteroid.y, 0x665544);
+        }
+        
+        if (!projectile.getData('piercing')) {
+            projectile.setActive(false).setVisible(false);
+            projectile.body.stop();
+        }
+    }
+
     updateCombo(delta) {
         if (this.gameState.comboTimer > 0) {
             this.gameState.comboTimer -= delta;
@@ -497,6 +552,7 @@ export class GameScene extends Phaser.Scene {
         this.projectileManager.update(time, delta);
         this.pickupManager.update(time, delta, this.player.sprite);
         this.waveManager.update(time, delta);
+        this.asteroidManager.update(time, delta);
         this.updateCombo(delta);
         
         // Auto-fire: always fire (space or click enhances, but we auto-fire by default)

@@ -27,6 +27,11 @@ export class WaveManager {
             this.startNormalWave();
         }
         
+        // Start asteroids from wave 4
+        if (this.scene.asteroidManager) {
+            this.scene.asteroidManager.start(this.currentWave);
+        }
+        
         // Announce wave
         this.announceWave();
     }
