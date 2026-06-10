@@ -265,9 +265,13 @@ export class GameScene extends Phaser.Scene {
                 isCrit ? 0xffcc00 : COLORS.PRIMARY
             );
             
-            if (isCrit) {
-                this.showDamageNumber(enemy.x, enemy.y - 20, finalDamage, true);
-            }
+            // Damage numbers (always show, bigger for crits)
+            this.showDamageNumber(
+                enemy.x + Phaser.Math.Between(-10, 10), 
+                enemy.y - 20, 
+                finalDamage, 
+                isCrit
+            );
         }
 
         // Destroy projectile unless piercing

@@ -17,13 +17,13 @@ export const COLORS = {
 };
 
 export const PLAYER = {
-    BASE_SPEED: 400,
-    BASE_HEALTH: 100,
-    BASE_SHIELD: 50,
-    INVULNERABLE_TIME: 1000,
-    DASH_SPEED: 800,
-    DASH_DURATION: 200,
-    DASH_COOLDOWN: 2000,
+    BASE_SPEED: 420,
+    BASE_HEALTH: 120,
+    BASE_SHIELD: 60,
+    INVULNERABLE_TIME: 1200,
+    DASH_SPEED: 900,
+    DASH_DURATION: 250,
+    DASH_COOLDOWN: 1800,
 };
 
 export const WEAPONS = {
@@ -90,8 +90,8 @@ export const ENEMIES = {
     DRONE: {
         name: 'Scout Drone',
         health: 30,
-        speed: 150,
-        damage: 10,
+        speed: 140,
+        damage: 8,
         score: 100,
         color: 0xff3366,
         size: 20,
@@ -100,14 +100,14 @@ export const ENEMIES = {
     },
     FIGHTER: {
         name: 'Fighter',
-        health: 60,
-        speed: 200,
-        damage: 15,
+        health: 55,
+        speed: 180,
+        damage: 12,
         score: 200,
         color: 0xff6b35,
         size: 25,
         behavior: 'strafe',
-        fireRate: 1500,
+        fireRate: 1800,
     },
     BOMBER: {
         name: 'Bomber',

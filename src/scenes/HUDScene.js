@@ -21,6 +21,7 @@ export class HUDScene extends Phaser.Scene {
         this.createMinimap();
         this.createComboDisplay();
         this.createUltimateDisplay();
+        this.createDangerVignette();
     }
 
     createHealthBar() {
@@ -236,6 +237,28 @@ export class HUDScene extends Phaser.Scene {
         
         // Update minimap
         this.updateMinimap();
+        
+        // Update danger vignette
+        this.updateDangerVignette(player.health / player.stats.maxHealth);
+    }
+
+    createDangerVignette() {
+        // Red border that pulses when health is low
+        this.vignetteTop = this.add.rectangle(GAME_WIDTH / 2, 0, GAME_WIDTH, 60, 0xff0000, 0).setOrigin(0.5, 0);
+        this.vignetteBottom = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT, GAME_WIDTH, 60, 0xff0000, 0).setOrigin(0.5, 1);
+        this.vignetteLeft = this.add.rectangle(0, GAME_HEIGHT / 2, 40, GAME_HEIGHT, 0xff0000, 0).setOrigin(0, 0.5);
+        this.vignetteRight = this.add.rectangle(GAME_WIDTH, GAME_HEIGHT / 2, 40, GAME_HEIGHT, 0xff0000, 0).setOrigin(1, 0.5);
+        this.vignetteElements = [this.vignetteTop, this.vignetteBottom, this.vignetteLeft, this.vignetteRight];
+    }
+
+    updateDangerVignette(healthPercent) {
+        if (healthPercent < 0.3) {
+            const intensity = (0.3 - healthPercent) / 0.3; // 0 to 1
+            const alpha = intensity * 0.4 * (0.5 + 0.5 * Math.sin(Date.now() / 200));
+            this.vignetteElements.forEach(el => el.setAlpha(alpha));
+        } else {
+            this.vignetteElements.forEach(el => el.setAlpha(0));
+        }
     }
 
     updateMinimap() {

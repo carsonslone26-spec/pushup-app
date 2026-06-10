@@ -31,7 +31,7 @@ export class Player {
             speed: PLAYER.BASE_SPEED + (u.speed || 0) * 30,
             damageMultiplier: 1 + (u.damage || 0) * 0.12,
             fireRateMultiplier: 1 - (u.fireRate || 0) * 0.08,
-            shieldRegen: 1 + (u.shieldRegen || 0) * 0.5,
+            shieldRegen: 2 + (u.shieldRegen || 0) * 0.8,
             dashCooldown: PLAYER.DASH_COOLDOWN - (u.dash || 0) * 200,
             magnetRange: 80 + (u.magnet || 0) * 30,
             critChance: 0.05 + (u.crit || 0) * 0.03,
