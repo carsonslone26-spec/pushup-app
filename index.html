@@ -1,112 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>AI Pushup Counter</title>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
-  
-  <style>
-    body { margin: 0; background: #1a1a1a; color: white; font-family: sans-serif; overflow: hidden; }
-    #container { position: relative; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; }
-    canvas { position: absolute; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-    video { display: none; }
-    #stats { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px; border: 2px solid #00ff00; }
-    .count { font-size: 48px; font-weight: bold; color: #00ff00; }
-    .feedback { font-size: 20px; color: #ffcc00; margin-top: 10px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stellar Rogue</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #000;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+        }
+        #game-container {
+            width: 100%;
+            height: 100%;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-
-<div id="container">
-  <video id="input_video"></video>
-  <canvas id="output_canvas"></canvas>
-  
-  <div id="stats">
-    <div class="count">REPS: <span id="reps">0</span></div>
-    <div id="status" class="feedback">Get into position...</div>
-  </div>
-</div>
-
-<script>
-const videoElement = document.getElementById('input_video');
-const canvasElement = document.getElementById('output_canvas');
-const canvasCtx = canvasElement.getContext('2d');
-const repDisplay = document.getElementById('reps');
-const statusDisplay = document.getElementById('status');
-
-let counter = 0;
-let stage = 'up';
-
-function onResults(results) {
-  if (!results.poseLandmarks) return;
-
-  // Set canvas size to match window
-  canvasElement.width = window.innerWidth;
-  canvasElement.height = window.innerHeight;
-
-  canvasCtx.save();
-  canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-  
-  // Draw the video frame
-  canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
-
-  // Get Shoulder and Hip landmarks
-  const l_sh = results.poseLandmarks[11]; // Left Shoulder
-  const r_sh = results.poseLandmarks[12]; // Right Shoulder
-  const l_hip = results.poseLandmarks[23]; // Left Hip
-  const r_hip = results.poseLandmarks[24]; // Right Hip
-
-  const avg_sh_y = (l_sh.y + r_sh.y) / 2;
-  const avg_hip_y = (l_hip.y + r_hip.y) / 2;
-
-  // Logic for counting (Front View)
-  if (avg_sh_y > 0.70) { 
-    stage = "down";
-    statusDisplay.innerText = "PUSH UP!";
-  }
-  if (avg_sh_y < 0.50 && stage === "down") {
-    stage = "up";
-    counter++;
-    repDisplay.innerText = counter;
-    statusDisplay.innerText = "GOOD REP!";
-  }
-
-  // Chill Form Checker
-  const hip_diff = avg_sh_y - avg_hip_y;
-  if (hip_diff > 0.2) {
-    statusDisplay.innerText = "Lower your hips!";
-  }
-
-  // Draw the "Skeleton"
-  drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {color: '#00FF00', lineWidth: 4});
-  drawLandmarks(canvasCtx, results.poseLandmarks, {color: '#FF0000', lineWidth: 2});
-  
-  canvasCtx.restore();
-}
-
-const pose = new Pose({
-  locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
-});
-
-pose.setOptions({
-  modelComplexity: 1,
-  smoothLandmarks: true,
-  minDetectionConfidence: 0.5,
-  minTrackingConfidence: 0.5
-});
-
-pose.onResults(onResults);
-
-const camera = new Camera(videoElement, {
-  onFrame: async () => {
-    await pose.send({image: videoElement});
-  },
-  width: 1280,
-  height: 720
-});
-camera.start();
-</script>
-
+    <div id="game-container"></div>
+    <script type="module" src="/src/main.js"></script>
 </body>
 </html>
