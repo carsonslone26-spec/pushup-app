@@ -148,7 +148,10 @@ export class WaveManager {
     }
 
     update(time, delta) {
-        // Additional spawn logic for continuous waves could go here
+        // Continuously check wave completion in case kills happened outside normal flow
+        if (this.isWaveActive && !this.betweenWaves) {
+            this.checkWaveComplete();
+        }
     }
 
     getCurrentWave() {

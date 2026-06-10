@@ -189,8 +189,9 @@ export class WaveRewardScene extends Phaser.Scene {
                 break;
         }
         
-        // Close and resume game
+        // Resume game first, then close this scene
+        const gameScene = this.gameScene;
         this.scene.stop();
-        this.gameScene.resumeFromReward();
+        gameScene.resumeFromReward();
     }
 }
