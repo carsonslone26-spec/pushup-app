@@ -9,6 +9,7 @@ import { GameOverScene } from './scenes/GameOverScene.js';
 import { UpgradeScene } from './scenes/UpgradeScene.js';
 import { SettingsScene } from './scenes/SettingsScene.js';
 import { WaveRewardScene } from './scenes/WaveRewardScene.js';
+import { TutorialOverlay } from './scenes/TutorialOverlay.js';
 
 const config = {
     type: Phaser.WEBGL,
@@ -45,7 +46,8 @@ const config = {
         GameOverScene,
         UpgradeScene,
         SettingsScene,
-        WaveRewardScene
+        WaveRewardScene,
+        TutorialOverlay
     ]
 };
 

@@ -46,6 +46,9 @@ export class GameScene extends Phaser.Scene {
         
         // Launch HUD
         this.scene.launch('HUDScene', { gameScene: this });
+        
+        // Show tutorial on first play
+        this.scene.launch('TutorialOverlay', { gameScene: this });
 
         // Start first wave
         this.time.delayedCall(1500, () => {
@@ -398,11 +401,26 @@ export class GameScene extends Phaser.Scene {
         // Save stats
         this.saveManager.endRun(this.gameState);
         
+        // Slow motion death effect
+        this.time.timeScale = 0.3;
+        
         // Big explosion on player
         this.particleManager.createBossExplosion(this.player.sprite.x, this.player.sprite.y);
         this.shakeScreen(15, 800);
         
-        this.time.delayedCall(1500, () => {
+        // Screen flash red
+        this.cameras.main.flash(500, 255, 50, 50);
+        
+        // Stop music
+        if (this.musicManager) {
+            this.musicManager.stop();
+        }
+        
+        this.time.delayedCall(500, () => {
+            this.time.timeScale = 1;
+        });
+        
+        this.time.delayedCall(2000, () => {
             this.scene.stop('HUDScene');
             this.scene.start('GameOverScene', {
                 score: this.gameState.score,
